@@ -1,4 +1,4 @@
-name: Bật GitHub Pages (chạy một lần)
+name: Chẩn đoán cấu hình GitHub Pages
 
 on:
   workflow_dispatch: {}
@@ -8,31 +8,15 @@ permissions:
   pages: write
 
 jobs:
-  enable:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Bật Pages với nguồn là nhánh gh-pages
+      - name: Kiểm tra environment và quy tắc nhánh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -x
-          CODE=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages" \
-            --data-binary '{"source":{"branch":"gh-pages","path":"/"}}')
-          echo "POST /pages -> $CODE"; cat /tmp/out.json
-          if [ "$CODE" = "409" ] || [ "$CODE" = "422" ]; then
-            CODE=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X PUT \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "Content-Type: application/json" \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages" \
-              --data-binary '{"source":{"branch":"gh-pages","path":"/"}}')
-            echo "PUT /pages -> $CODE"; cat /tmp/out.json
-          fi
-          curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages" | tee /tmp/pages.json
-          echo "URL:"; python3 -c "import json;print(json.load(open('/tmp/pages.json')).get('html_url','(chưa có)'))"
+          api() { curl -sS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}$1"; }
+          echo "===== /pages"; api /pages
+          echo "===== default_branch"; api "" | python3 -c "import sys,json;print(json.load(sys.stdin).get('default_branch'))"
+          echo "===== /environments"; api /environments
+          echo "===== deployment-branch-policies"; api /environments/github-pages/deployment-branch-policies
