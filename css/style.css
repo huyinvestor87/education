@@ -444,3 +444,21 @@ main#app { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
   .scene-dot { padding: 7px 12px; min-height: 40px; font-size: .8rem; }
   main#app { padding-top: 14px; padding-bottom: 24px; }
 }
+
+/* Quãng nghỉ giữa hai cảnh của bài giảng */
+.rest-hint {
+  margin-top: 8px; text-align: center; font-weight: 800; font-size: .9rem;
+  color: var(--accent, var(--brand)); letter-spacing: .06em;
+  animation: restPulse 1.2s ease-in-out infinite;
+}
+@keyframes restPulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+
+/* Nút chuyển ngôn ngữ Việt / Anh */
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.lang-toggle {
+  display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
+  border-radius: 999px; border: 2px solid var(--border); background: #fff;
+  font-weight: 800; font-size: .88rem; color: var(--ink-soft); white-space: nowrap;
+}
+.lang-toggle:active { border-color: var(--brand); color: var(--brand); }
+.lang-toggle span { font-variant: small-caps; letter-spacing: .04em; }

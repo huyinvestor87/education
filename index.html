@@ -14,23 +14,26 @@
     <div class="header-inner">
       <a class="logo" href="#/">
         <span class="logo-badge">🧮</span>
-        <span>Toán 6 Vui</span>
+        <span data-i18n="brandName">Toán 6 Vui</span>
       </a>
       <nav class="site-nav" id="siteNav">
-        <a href="#/" data-route="home">Trang chủ</a>
-        <a href="#/luyen-tap" data-route="luyen-tap">Luyện tập</a>
-        <a href="#/hsg" data-route="hsg">Học sinh giỏi</a>
-        <a href="#/de-thi" data-route="de-thi">Đề thi</a>
-        <a href="#/tien-do" data-route="tien-do">Tiến độ</a>
+        <a href="#/" data-route="home" data-i18n="navHome">Trang chủ</a>
+        <a href="#/luyen-tap" data-route="luyen-tap" data-i18n="navPractice">Luyện tập</a>
+        <a href="#/hsg" data-route="hsg" data-i18n="navHsg">Học sinh giỏi</a>
+        <a href="#/de-thi" data-route="de-thi" data-i18n="navExam">Đề thi</a>
+        <a href="#/tien-do" data-route="tien-do" data-i18n="navProgress">Tiến độ</a>
       </nav>
-      <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false">☰</button>
+      <div class="header-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Tiếng Việt / English" title="Tiếng Việt / English">🌐 <span id="langLabel">EN</span></button>
+        <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false">☰</button>
+      </div>
     </div>
   </header>
 
   <main id="app" role="main"></main>
 
   <footer class="site-footer">
-    <p>© <span id="year"></span> Toán 6 Vui · Nội dung bám sát SGK Toán 6 — bộ sách <b>Kết nối tri thức với cuộc sống</b>. Học mà chơi, chơi mà học! 🎓</p>
+    <p>© <span id="year"></span> <span data-i18n="brandName">Toán 6 Vui</span> · <span id="footerText">Nội dung bám sát SGK Toán 6 — bộ sách <b>Kết nối tri thức với cuộc sống</b>. Học mà chơi, chơi mà học! 🎓</span></p>
   </footer>
 
   <script type="module" src="js/app.js?v=__BUILD_ID__"></script>

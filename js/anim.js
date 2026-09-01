@@ -63,66 +63,83 @@ export function resultBox(x, y, text, t, color = '#22B27C', w = 260, h = 56) {
 
 // ----------------------------------------------------------- Trình phát
 export class AnimPlayer {
-  constructor({ mount, scenes, accent = '#4F8EF7', backHash = '#/', practiceHash = null, title = '' }) {
+  constructor({ mount, scenes, accent = '#4F8EF7', backHash = '#/', practiceHash = null, title = '', lang = 'vi', strings = {} }) {
     this.mount = mount;
     this.scenes = scenes;
     this.accent = accent;
     this.backHash = backHash;
     this.practiceHash = practiceHash;
     this.title = title;
+    this.lang = lang;
+    this.s = strings;                 // nhãn giao diện đã dịch sẵn
     this.index = 0;
-    this.elapsed = 0;          // giây đã trôi trong cảnh hiện tại
+    this.elapsed = 0;                 // giây đã trôi trong cảnh hiện tại
     this.playing = false;
     this.voiceOn = true;
-    this.lastTs = 0;
     this.rafId = null;
-    this.frameGap = 1000 / 30; // 30fps: đủ mượt, nhẹ pin cho iPad
+    this.frameGap = 1000 / 30;        // 30fps: đủ mượt, nhẹ pin cho iPad
     this.lastDraw = 0;
     this.destroyed = false;
+    // Nghỉ giữa các cảnh
+    this.gap = 1.6;                   // giây nghỉ sau khi đọc xong mỗi cảnh
+    this.maxHold = 30;                // chờ giọng đọc tối đa (phòng lỗi trình duyệt)
+    this.resting = false;
+    this.restBegan = 0;
+    this.speechEndedAt = 0;
+    // Trạng thái giọng đọc
+    this.speaking = false;
+    this.speechToken = 0;
+    this.keepAlive = null;
   }
 
   get scene() { return this.scenes[this.index]; }
   get total() { return this.scenes.reduce((s, x) => s + x.dur, 0); }
-  get done() { return this.index >= this.scenes.length - 1 && this.elapsed >= this.scene.dur; }
+  get atEnd() { return this.index >= this.scenes.length - 1; }
+
+  sceneTitle(sc) { return (this.lang === 'en' && sc.title_en) ? sc.title_en : sc.title; }
+  sceneCaption(sc) { return (this.lang === 'en' && sc.caption_en) ? sc.caption_en : sc.caption; }
 
   render() {
+    const S = this.s;
     this.mount.innerHTML = `
       <section class="player" style="--accent:${this.accent}">
         <div class="player-head">
-          <a class="icon-btn" href="${this.backHash}" aria-label="Quay lại">←</a>
+          <a class="icon-btn" href="${this.backHash}" aria-label="${S.back || 'Quay lại'}">←</a>
           <div class="player-title"><b>${this.title}</b><span id="pScene"></span></div>
-          <button class="icon-btn" id="pVoice" aria-label="Bật/tắt giọng đọc">🔊</button>
+          <button class="icon-btn" id="pVoice" aria-label="${S.voice || 'Bật/tắt giọng đọc'}">🔊</button>
         </div>
 
         <div class="anim-stage" id="pStage"></div>
 
         <div class="caption-bar"><p id="pCaption"></p></div>
+        <div class="rest-hint" id="pRest" hidden>••• ${S.nextScene || 'Chuyển cảnh tiếp theo'} •••</div>
 
         <div class="player-bar"><span id="pProgress"></span></div>
 
         <div class="player-controls">
-          <button class="ctrl-btn" id="pPrev" aria-label="Cảnh trước">⏮</button>
-          <button class="ctrl-btn ctrl-main" id="pPlay" aria-label="Phát">▶️</button>
-          <button class="ctrl-btn" id="pNext" aria-label="Cảnh sau">⏭</button>
-          <button class="ctrl-btn" id="pReplay" aria-label="Xem lại từ đầu">🔁</button>
+          <button class="ctrl-btn" id="pPrev" aria-label="${S.prevScene || 'Cảnh trước'}">⏮</button>
+          <button class="ctrl-btn ctrl-main" id="pPlay" aria-label="${S.play || 'Phát'}">▶️</button>
+          <button class="ctrl-btn" id="pNext" aria-label="${S.nextScene || 'Cảnh sau'}">⏭</button>
+          <button class="ctrl-btn" id="pReplay" aria-label="${S.replay || 'Xem lại từ đầu'}">🔁</button>
         </div>
 
         <div class="scene-dots" id="pDots">
-          ${this.scenes.map((s, i) => `<button class="scene-dot" data-i="${i}"><b>${i + 1}</b><span>${s.title}</span></button>`).join('')}
+          ${this.scenes.map((s, i) => `<button class="scene-dot" data-i="${i}"><b>${i + 1}</b><span>${this.sceneTitle(s)}</span></button>`).join('')}
         </div>
 
         <div class="player-end" id="pEnd" hidden>
-          <h2>🎉 Hết bài giảng rồi!</h2>
-          <p>Em đã xem xong. Giờ luyện tập để nhớ thật lâu nhé!</p>
+          <h2>${S.endTitle || '🎉 Hết bài giảng rồi!'}</h2>
+          <p>${S.endText || 'Em đã xem xong. Giờ luyện tập để nhớ thật lâu nhé!'}</p>
           <div class="summary-actions">
-            <button class="btn btn-outline" id="pEndReplay">🔁 Xem lại</button>
-            ${this.practiceHash ? `<a class="btn btn-primary" href="${this.practiceHash}">✏️ Luyện tập ngay</a>` : ''}
+            <button class="btn btn-outline" id="pEndReplay">🔁 ${S.replay || 'Xem lại'}</button>
+            ${this.practiceHash ? `<a class="btn btn-primary" href="${this.practiceHash}">✏️ ${S.practiceNow || 'Luyện tập ngay'}</a>` : ''}
           </div>
         </div>
       </section>`;
 
     this.$stage = this.mount.querySelector('#pStage');
     this.$caption = this.mount.querySelector('#pCaption');
+    this.$rest = this.mount.querySelector('#pRest');
     this.$progress = this.mount.querySelector('#pProgress');
     this.$play = this.mount.querySelector('#pPlay');
     this.$sceneLabel = this.mount.querySelector('#pScene');
@@ -130,8 +147,8 @@ export class AnimPlayer {
     this.$end = this.mount.querySelector('#pEnd');
 
     this.$play.addEventListener('click', () => this.toggle());
-    this.mount.querySelector('#pNext').addEventListener('click', () => this.goto(this.index + 1));
-    this.mount.querySelector('#pPrev').addEventListener('click', () => this.goto(this.index - 1));
+    this.mount.querySelector('#pNext').addEventListener('click', () => { this.goto(this.index + 1); });
+    this.mount.querySelector('#pPrev').addEventListener('click', () => { this.goto(this.index - 1); });
     this.mount.querySelector('#pReplay').addEventListener('click', () => { this.goto(0); this.play(); });
     this.mount.querySelector('#pEndReplay').addEventListener('click', () => { this.goto(0); this.play(); });
     this.$voice.addEventListener('click', () => this.toggleVoice());
@@ -146,11 +163,12 @@ export class AnimPlayer {
 
   play() {
     if (this.destroyed) return;
-    if (this.done) { this.goto(0); }
+    if (this.atEnd && this.resting) this.goto(0);
     this.playing = true;
     this.$play.textContent = '⏸';
     this.$end.hidden = true;
-    this.speak(this.scene.caption, this.elapsed < 0.35);
+    // Nếu đang tạm dừng giữa chừng thì tiếp tục đọc, chưa đọc thì đọc từ đầu cảnh
+    this.speak(this.sceneCaption(this.scene), this.elapsed < 0.35 && !this.speaking);
     this.lastTs = performance.now();
     cancelAnimationFrame(this.rafId);
     this.rafId = requestAnimationFrame((ts) => this.loop(ts));
@@ -160,25 +178,28 @@ export class AnimPlayer {
     this.playing = false;
     if (this.$play) this.$play.textContent = '▶️';
     cancelAnimationFrame(this.rafId);
-    try { window.speechSynthesis && window.speechSynthesis.pause(); } catch (e) {}
+    try { if (window.speechSynthesis) window.speechSynthesis.pause(); } catch (e) {}
   }
 
   goto(i) {
-    if (i < 0) i = 0;
-    if (i > this.scenes.length - 1) i = this.scenes.length - 1;
-    this.enterScene(i, this.playing);
+    const n = this.scenes.length;
+    this.enterScene(Math.min(n - 1, Math.max(0, i)), this.playing);
   }
 
   enterScene(i, speakNow) {
     this.index = i;
     this.elapsed = 0;
-    this.$sceneLabel.textContent = `Cảnh ${i + 1}/${this.scenes.length} · ${this.scene.title}`;
-    this.$caption.textContent = this.scene.caption;
+    this.resting = false;
+    this.speechEndedAt = 0;
+    if (this.$rest) this.$rest.hidden = true;
+    this.$sceneLabel.textContent = `${this.s.scene || 'Cảnh'} ${i + 1}/${this.scenes.length} · ${this.sceneTitle(this.scene)}`;
+    this.$caption.textContent = this.sceneCaption(this.scene);
     this.$caption.classList.remove('caption-in');
     void this.$caption.offsetWidth;      // ép trình duyệt chạy lại hiệu ứng
     this.$caption.classList.add('caption-in');
     this.mount.querySelectorAll('.scene-dot').forEach((b, k) => b.classList.toggle('active', k === i));
-    if (speakNow) this.speak(this.scene.caption, true);
+    if (speakNow) this.speak(this.sceneCaption(this.scene), true);
+    else { this.stopSpeech(); }
     this.draw(0);
   }
 
@@ -186,54 +207,127 @@ export class AnimPlayer {
     this.voiceOn = !this.voiceOn;
     this.$voice.textContent = this.voiceOn ? '🔊' : '🔇';
     this.$voice.classList.toggle('muted', !this.voiceOn);
-    if (!this.voiceOn) { try { window.speechSynthesis.cancel(); } catch (e) {} }
-    else if (this.playing) this.speak(this.scene.caption, true);
+    if (!this.voiceOn) this.stopSpeech();
+    else if (this.playing) this.speak(this.sceneCaption(this.scene), true);
+  }
+
+  // ---------------------------------------------------------- giọng đọc
+  /** Tách lời thoại thành câu ngắn: Safari/Chrome hay cắt tiếng với câu dài. */
+  chunkText(text) {
+    const parts = String(text).match(/[^.!?…]+[.!?…]*\s*/g) || [String(text)];
+    const out = [];
+    let buf = '';
+    for (const p of parts) {
+      if (buf && (buf + p).length > 170) { out.push(buf.trim()); buf = p; }
+      else buf += p;
+    }
+    if (buf.trim()) out.push(buf.trim());
+    return out;
+  }
+
+  pickVoice(ss) {
+    const want = this.lang === 'en' ? /^en([-_]|$)/i : /^vi([-_]|$)/i;
+    const voices = ss.getVoices() || [];
+    return voices.find(v => want.test(v.lang)) || null;
+  }
+
+  /** Thực sự còn đang phát tiếng? Dựa vào cờ của chính trình duyệt để nếu
+   *  thiết bị không có giọng đọc thì không chờ vô ích. */
+  stillSpeaking() {
+    if (!this.speaking) return false;
+    try {
+      const ss = window.speechSynthesis;
+      return !!ss && (ss.speaking || ss.pending);
+    } catch (e) { return false; }
+  }
+
+  stopSpeech() {
+    this.speechToken++;
+    this.speaking = false;
+    clearInterval(this.keepAlive);
+    this.keepAlive = null;
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
   }
 
   speak(text, restart) {
     if (!this.voiceOn || !text) return;
+    let ss;
+    try { ss = window.speechSynthesis; } catch (e) { return; }
+    if (!ss) return;
+    if (!restart) {
+      // đang đọc dở và người dùng bấm tiếp tục
+      if (ss.paused) { ss.resume(); return; }
+      if (this.speaking) return;
+    }
+    this.stopSpeech();
+    const token = ++this.speechToken;
+    const chunks = this.chunkText(text);
+    this.speaking = true;
     try {
-      const ss = window.speechSynthesis;
-      if (!ss) return;
-      if (!restart && ss.paused) { ss.resume(); return; }
-      ss.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'vi-VN';
-      u.rate = 0.95;
-      const v = ss.getVoices().find(x => /vi[-_]VN/i.test(x.lang));
-      if (v) u.voice = v;
-      ss.speak(u);
-    } catch (e) { /* trình duyệt không hỗ trợ đọc — bỏ qua */ }
+      chunks.forEach((c, i) => {
+        const u = new SpeechSynthesisUtterance(c);
+        u.lang = this.lang === 'en' ? 'en-US' : 'vi-VN';
+        u.rate = this.lang === 'en' ? 0.92 : 0.95;
+        const v = this.pickVoice(ss);
+        if (v) u.voice = v;
+        if (i === chunks.length - 1) {
+          u.onend = () => { if (token === this.speechToken) { this.speaking = false; clearInterval(this.keepAlive); this.keepAlive = null; } };
+          u.onerror = () => { if (token === this.speechToken) { this.speaking = false; clearInterval(this.keepAlive); this.keepAlive = null; } };
+        }
+        ss.speak(u);
+      });
+      // Chống lỗi tự ngắt sau ~15 giây của một số trình duyệt
+      clearInterval(this.keepAlive);
+      this.keepAlive = setInterval(() => {
+        try {
+          if (!this.speaking) { clearInterval(this.keepAlive); this.keepAlive = null; return; }
+          if (ss.speaking && !ss.paused) { ss.pause(); ss.resume(); }
+        } catch (e) {}
+      }, 9000);
+    } catch (e) { this.speaking = false; }
   }
 
   // ---------------------------------------------------------- vòng lặp
   loop(ts) {
     if (!this.playing || this.destroyed) return;
+    const now = ts;
     const dt = Math.min(0.05, (ts - this.lastTs) / 1000);
     this.lastTs = ts;
-    this.elapsed += dt;
 
-    if (this.elapsed >= this.scene.dur) {
-      if (this.index < this.scenes.length - 1) {
-        this.enterScene(this.index + 1, true);
-      } else {
+    if (!this.resting) {
+      this.elapsed += dt;
+      if (this.elapsed >= this.scene.dur) {
         this.elapsed = this.scene.dur;
+        this.resting = true;            // giữ khung hình cuối, chờ đọc xong
+        this.restBegan = now;
+        this.speechEndedAt = 0;
         this.draw(1);
-        this.pause();
-        this.$end.hidden = false;
-        return;
       }
     }
-    if (ts - this.lastDraw >= this.frameGap) {
+
+    if (this.resting) {
+      const waitedTooLong = now - this.restBegan > this.maxHold * 1000;
+      if (this.stillSpeaking() && !waitedTooLong) {
+        // vẫn đang thuyết minh: đợi, không cắt tiếng
+      } else {
+        if (!this.speechEndedAt) { this.speechEndedAt = now; if (this.$rest) this.$rest.hidden = false; }
+        if (now - this.speechEndedAt >= this.gap * 1000) {   // hết quãng nghỉ
+          if (this.$rest) this.$rest.hidden = true;
+          if (!this.atEnd) { this.enterScene(this.index + 1, true); }
+          else { this.pause(); this.$end.hidden = false; return; }
+        }
+      }
+    } else if (ts - this.lastDraw >= this.frameGap) {
       this.lastDraw = ts;
       this.draw(clamp(this.elapsed / this.scene.dur));
     }
+
     this.rafId = requestAnimationFrame((t) => this.loop(t));
   }
 
   draw(t) {
     if (!this.$stage) return;
-    this.$stage.innerHTML = this.scene.draw(t);
+    this.$stage.innerHTML = this.scene.draw(t, this.lang);
     const before = this.scenes.slice(0, this.index).reduce((s, x) => s + x.dur, 0);
     this.$progress.style.width = `${((before + t * this.scene.dur) / this.total) * 100}%`;
   }
@@ -242,6 +336,6 @@ export class AnimPlayer {
     this.destroyed = true;
     this.playing = false;
     cancelAnimationFrame(this.rafId);
-    try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+    this.stopSpeech();
   }
 }

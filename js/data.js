@@ -1,6 +1,7 @@
 // js/data.js
 // Toàn bộ nội dung chương trình Toán 6 – bộ sách Kết nối tri thức với cuộc sống.
 import * as I from './illustrations.js?v=__BUILD_ID__';
+import { CHAPTER_EN, EXAM_EN, QUESTION_EN } from './data.en.js?v=__BUILD_ID__';
 
 export const CHAPTERS = [
   // ============================================================= CHƯƠNG 1
@@ -404,3 +405,33 @@ export const EXAMS = [
   { id: 'cuoiky2', title: 'Kiểm tra cuối học kì II — Tổng hợp cả năm', minutes: 90, chapters: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'], mix: { easy: 10, medium: 12, hard: 8 }, desc: 'Đề tổng ôn tập toàn bộ chương trình Toán 6.' },
   { id: 'hsg', title: 'Đề thi Học sinh giỏi Toán 6', minutes: 90, chapters: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9'], mix: { hsg: 18 }, desc: 'Thử sức với các bài toán nâng cao, tư duy — dành cho học sinh giỏi.' },
 ];
+
+// ---------------------------------------------------------------- Song ngữ
+// Gắn bản dịch tiếng Anh vào dữ liệu (giữ nguyên thứ tự phương án để chỉ số
+// đáp án đúng không đổi).
+CHAPTERS.forEach(ch => {
+  const e = CHAPTER_EN[ch.id];
+  if (!e) return;
+  ch.title_en = e.title;
+  ch.hook_en = e.hook;
+  (e.theory || []).forEach((sec, i) => {
+    if (!ch.theory[i]) return;
+    ch.theory[i].heading_en = sec.heading;
+    ch.theory[i].html_en = sec.html;
+  });
+});
+
+EXAMS.forEach(ex => {
+  const e = EXAM_EN[ex.id];
+  if (!e) return;
+  ex.title_en = e.title;
+  ex.desc_en = e.desc;
+});
+
+QUESTIONS.forEach(q => {
+  const e = QUESTION_EN[q.id];
+  if (!e) return;
+  q.q_en = e[0];
+  q.options_en = e[1];
+  q.explain_en = e[2];
+});

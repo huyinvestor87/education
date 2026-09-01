@@ -85,14 +85,14 @@ export function overallStats(allQuestions) {
 }
 
 export const BADGES = [
-  { id: 'first-step', name: 'Bước chân đầu tiên', emoji: '🌱', desc: 'Hoàn thành bài luyện tập đầu tiên', test: (p) => Object.keys(p.answered).length >= 1 },
-  { id: 'ten-done', name: 'Chăm chỉ', emoji: '📚', desc: 'Làm đúng 10 câu hỏi', test: (p) => Object.values(p.answered).filter(a => a.correct).length >= 10 },
-  { id: 'fifty-done', name: 'Cày cuốc', emoji: '🔥', desc: 'Làm đúng 50 câu hỏi', test: (p) => Object.values(p.answered).filter(a => a.correct).length >= 50 },
-  { id: 'streak3', name: 'Kiên trì 3 ngày', emoji: '🗓️', desc: 'Học liên tục 3 ngày', test: (p) => (p.streak || 0) >= 3 },
-  { id: 'streak7', name: 'Bền bỉ 7 ngày', emoji: '🏅', desc: 'Học liên tục 7 ngày', test: (p) => (p.streak || 0) >= 7 },
-  { id: 'first-exam', name: 'Thí sinh nhí', emoji: '📝', desc: 'Hoàn thành một đề thi thử', test: (p) => p.examHistory.length >= 1 },
-  { id: 'exam10', name: 'Điểm 10 trọn vẹn', emoji: '💯', desc: 'Đạt điểm tuyệt đối trong một đề thi', test: (p) => p.examHistory.some(e => e.score === e.total && e.total > 0) },
-  { id: 'hsg-brave', name: 'Dũng sĩ HSG', emoji: '🏆', desc: 'Hoàn thành một đề thi Học sinh giỏi', test: (p) => p.examHistory.some(e => e.examId === 'hsg') },
+  { id: 'first-step', name: 'Bước chân đầu tiên', name_en: 'First step', emoji: '🌱', desc: 'Hoàn thành bài luyện tập đầu tiên', desc_en: 'Finish your first practice question', test: (p) => Object.keys(p.answered).length >= 1 },
+  { id: 'ten-done', name: 'Chăm chỉ', name_en: 'Hard worker', emoji: '📚', desc: 'Làm đúng 10 câu hỏi', desc_en: 'Answer 10 questions correctly', test: (p) => Object.values(p.answered).filter(a => a.correct).length >= 10 },
+  { id: 'fifty-done', name: 'Cày cuốc', name_en: 'On fire', emoji: '🔥', desc: 'Làm đúng 50 câu hỏi', desc_en: 'Answer 50 questions correctly', test: (p) => Object.values(p.answered).filter(a => a.correct).length >= 50 },
+  { id: 'streak3', name: 'Kiên trì 3 ngày', name_en: '3-day streak', emoji: '🗓️', desc: 'Học liên tục 3 ngày', desc_en: 'Study three days in a row', test: (p) => (p.streak || 0) >= 3 },
+  { id: 'streak7', name: 'Bền bỉ 7 ngày', name_en: '7-day streak', emoji: '🏅', desc: 'Học liên tục 7 ngày', desc_en: 'Study seven days in a row', test: (p) => (p.streak || 0) >= 7 },
+  { id: 'first-exam', name: 'Thí sinh nhí', name_en: 'Exam rookie', emoji: '📝', desc: 'Hoàn thành một đề thi thử', desc_en: 'Complete one mock exam', test: (p) => p.examHistory.length >= 1 },
+  { id: 'exam10', name: 'Điểm 10 trọn vẹn', name_en: 'Perfect score', emoji: '💯', desc: 'Đạt điểm tuyệt đối trong một đề thi', desc_en: 'Get full marks on an exam', test: (p) => p.examHistory.some(e => e.score === e.total && e.total > 0) },
+  { id: 'hsg-brave', name: 'Dũng sĩ HSG', name_en: 'Challenge hero', emoji: '🏆', desc: 'Hoàn thành một đề thi Học sinh giỏi', desc_en: 'Complete a gifted-student exam', test: (p) => p.examHistory.some(e => e.examId === 'hsg') },
 ];
 
 export function earnedBadges() {

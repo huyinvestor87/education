@@ -4,7 +4,8 @@ Trang web học Toán 6 trực quan, sinh động, bám sát chương trình b�
 
 ## Tính năng
 
-- **Bài giảng hoạt hình có thuyết minh**: mỗi chương là một "đoạn phim" gồm 3–4 cảnh SVG chuyển động (chia pizza, tàu ngầm nổi lên, kim đồng hồ mở góc, lát gạch sân…) với phụ đề và giọng đọc tiếng Việt (Web Speech API), có nút phát/tạm dừng, chuyển cảnh, tua lại — tổng cộng 34 cảnh, khoảng 5,5 phút.
+- **Song ngữ Việt – Anh**: nút 🌐 trên thanh tiêu đề đổi toàn bộ trang sang tiếng Anh — giao diện, lý thuyết, 126 câu hỏi kèm lời giải, đề thi, huy hiệu, phụ đề và cả giọng đọc bài giảng (vi-VN / en-US). Lựa chọn được ghi nhớ trên thiết bị.
+- **Bài giảng hoạt hình có thuyết minh**: mỗi chương là một "đoạn phim" gồm 3–4 cảnh SVG chuyển động (chia pizza, tàu ngầm nổi lên, kim đồng hồ mở góc, lát gạch sân…) với phụ đề và giọng đọc, có nút phát/tạm dừng, chuyển cảnh, tua lại — tổng cộng 34 cảnh, khoảng 5,5 phút. Cảnh chỉ chuyển sau khi đọc xong lời thuyết minh, kèm một quãng nghỉ 1,6 giây nên không bao giờ bị cắt tiếng.
 - **9 chương học đầy đủ** (Số tự nhiên, Chia hết, Số nguyên, Hình phẳng thực tiễn, Đối xứng, Thống kê – Xác suất, Phân số, Số thập phân, Góc & Hai đường thẳng song song), mỗi chương có lý thuyết trực quan bằng hình vẽ SVG (trục số, đồng hồ, biểu đồ, hình học, phân số...) và ví dụ gắn với đời sống thực tế.
 - **Luyện tập 3 mức độ** (Dễ / Trung bình / Khó) cho từng chương, có phản hồi đúng/sai tức thì kèm lời giải chi tiết.
 - **Luyện thi Học sinh giỏi**: ngân hàng bài toán nâng cao riêng cho từng chương, cùng đề thi HSG tổng hợp 90 phút.
@@ -34,6 +35,8 @@ index.html          Khung trang + điều hướng
 css/style.css        Toàn bộ giao diện, responsive
 js/data.js           Nội dung chương trình học + ngân hàng câu hỏi + đề thi
 js/anim.js           Engine hoạt hình: trình phát cảnh, phụ đề, giọng đọc
+js/i18n.js           Chuyển ngôn ngữ Việt/Anh + từ điển giao diện
+js/data.en.js        Bản dịch tiếng Anh: lý thuyết, đề thi, 126 câu hỏi
 js/lessons.js        Kịch bản các cảnh hoạt hình của 9 chương
 js/illustrations.js  Thư viện tạo hình minh họa SVG
 js/progress.js        Lưu trữ tiến độ học tập (localStorage)
