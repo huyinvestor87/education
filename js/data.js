@@ -1,6 +1,6 @@
 // js/data.js
 // Toàn bộ nội dung chương trình Toán 6 – bộ sách Kết nối tri thức với cuộc sống.
-import * as I from './illustrations.js';
+import * as I from './illustrations.js?v=__BUILD_ID__';
 
 export const CHAPTERS = [
   // ============================================================= CHƯƠNG 1

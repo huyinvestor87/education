@@ -1,6 +1,6 @@
 // js/app.js — Điều hướng (router) và toàn bộ giao diện của trang web Toán 6.
-import { CHAPTERS, QUESTIONS, EXAMS, chapterById, questionsOf } from './data.js';
-import * as P from './progress.js';
+import { CHAPTERS, QUESTIONS, EXAMS, chapterById, questionsOf } from './data.js?v=__BUILD_ID__';
+import * as P from './progress.js?v=__BUILD_ID__';
 
 const app = document.getElementById('app');
 const navToggle = document.getElementById('navToggle');

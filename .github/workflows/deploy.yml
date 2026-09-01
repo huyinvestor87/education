@@ -1,0 +1,47 @@
+name: Deploy trang web lên GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - claude/math-learning-website-grade-6-bd10ph
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Chống cache — gắn phiên bản (build id) vào js/css
+        run: |
+          BUILD_ID="${GITHUB_SHA::8}-$(date -u +%Y%m%d%H%M%S)"
+          echo "Build id: $BUILD_ID"
+          grep -rl "__BUILD_ID__" --include="*.html" --include="*.js" . | while read -r f; do
+            sed -i "s/__BUILD_ID__/${BUILD_ID}/g" "$f"
+          done
+
+      - name: Cấu hình GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Đóng gói toàn bộ site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy lên GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
