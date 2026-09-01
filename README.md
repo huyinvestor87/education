@@ -4,6 +4,7 @@ Trang web học Toán 6 trực quan, sinh động, bám sát chương trình b�
 
 ## Tính năng
 
+- **Bài giảng hoạt hình có thuyết minh**: mỗi chương là một "đoạn phim" gồm 3–4 cảnh SVG chuyển động (chia pizza, tàu ngầm nổi lên, kim đồng hồ mở góc, lát gạch sân…) với phụ đề và giọng đọc tiếng Việt (Web Speech API), có nút phát/tạm dừng, chuyển cảnh, tua lại — tổng cộng 34 cảnh, khoảng 5,5 phút.
 - **9 chương học đầy đủ** (Số tự nhiên, Chia hết, Số nguyên, Hình phẳng thực tiễn, Đối xứng, Thống kê – Xác suất, Phân số, Số thập phân, Góc & Hai đường thẳng song song), mỗi chương có lý thuyết trực quan bằng hình vẽ SVG (trục số, đồng hồ, biểu đồ, hình học, phân số...) và ví dụ gắn với đời sống thực tế.
 - **Luyện tập 3 mức độ** (Dễ / Trung bình / Khó) cho từng chương, có phản hồi đúng/sai tức thì kèm lời giải chi tiết.
 - **Luyện thi Học sinh giỏi**: ngân hàng bài toán nâng cao riêng cho từng chương, cùng đề thi HSG tổng hợp 90 phút.
@@ -32,6 +33,8 @@ Mỗi lần push lên nhánh chính, GitHub Actions (`.github/workflows/deploy.y
 index.html          Khung trang + điều hướng
 css/style.css        Toàn bộ giao diện, responsive
 js/data.js           Nội dung chương trình học + ngân hàng câu hỏi + đề thi
+js/anim.js           Engine hoạt hình: trình phát cảnh, phụ đề, giọng đọc
+js/lessons.js        Kịch bản các cảnh hoạt hình của 9 chương
 js/illustrations.js  Thư viện tạo hình minh họa SVG
 js/progress.js        Lưu trữ tiến độ học tập (localStorage)
 js/app.js             Điều hướng (router) + toàn bộ logic giao diện & bài kiểm tra

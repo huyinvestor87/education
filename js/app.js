@@ -1,6 +1,8 @@
 // js/app.js — Điều hướng (router) và toàn bộ giao diện của trang web Toán 6.
 import { CHAPTERS, QUESTIONS, EXAMS, chapterById, questionsOf } from './data.js?v=__BUILD_ID__';
 import * as P from './progress.js?v=__BUILD_ID__';
+import { LESSON_SCENES } from './lessons.js?v=__BUILD_ID__';
+import { AnimPlayer } from './anim.js?v=__BUILD_ID__';
 
 const app = document.getElementById('app');
 const navToggle = document.getElementById('navToggle');
@@ -105,6 +107,7 @@ function viewHome() {
             <div class="chapter-tag">${ch.book} · Chương ${ch.order}</div>
             <h3>${ch.title}</h3>
             <p>${ch.hook}</p>
+            ${LESSON_SCENES[ch.id] ? '<span class="watch-badge">▶️ Có bài giảng hoạt hình</span>' : ''}
           </a>`;
         }).join('')}
       </div>
@@ -115,7 +118,7 @@ function viewHome() {
         <h2>Vì sao học sinh sẽ thích học Toán ở đây?</h2>
       </div>
       <div class="feature-grid">
-        <div class="feature"><span>🖼️</span><h3>Trực quan, sinh động</h3><p>Mọi kiến thức đều minh họa bằng hình vẽ, biểu đồ, đồng hồ, trục số… dễ hình dung.</p></div>
+        <div class="feature"><span>🎬</span><h3>Bài giảng hoạt hình</h3><p>Mỗi chương là một đoạn phim hoạt hình có thuyết minh tiếng Việt: pizza được chia, tàu ngầm nổi lên, kim đồng hồ mở góc…</p></div>
         <div class="feature"><span>🛒</span><h3>Gắn với đời sống</h3><p>Ví dụ thực tế: đi chợ, đo sân bóng, xem nhiệt độ, tính giảm giá — Toán học ở ngay xung quanh em.</p></div>
         <div class="feature"><span>🎯</span><h3>Luyện từ dễ đến khó</h3><p>Ba mức Dễ – Trung bình – Khó cho từng chủ đề, cùng ngân hàng câu hỏi Học sinh giỏi.</p></div>
         <div class="feature"><span>⏱️</span><h3>Đề thi có đếm giờ</h3><p>Rèn tốc độ làm bài với các đề kiểm tra và đề thi thử bấm giờ như thi thật.</p></div>
@@ -150,6 +153,7 @@ function viewChapter(id) {
         <div class="chapter-tag light">${ch.book} · Chương ${ch.order}</div>
         <h1>${ch.title}</h1>
         <p>${ch.hook}</p>
+        ${LESSON_SCENES[ch.id] ? `<a class="btn btn-watch" href="#/bai-giang/${ch.id}">▶️ Xem bài giảng hoạt hình (${LESSON_SCENES[ch.id].length} cảnh)</a>` : ''}
       </div>
     </section>
 
@@ -400,8 +404,25 @@ function viewProgress() {
   });
 }
 
+// ----------------------------------------------------------------- VIEW: Bài giảng hoạt hình
+function viewLesson(chapterId) {
+  const ch = chapterById(chapterId);
+  const scenes = LESSON_SCENES[chapterId];
+  if (!ch || !scenes) { go('#/'); return; }
+  currentPlayer = new AnimPlayer({
+    mount: app,
+    scenes,
+    accent: ch.color,
+    title: `${ch.emoji} ${ch.title}`,
+    backHash: `#/chuong/${chapterId}`,
+    practiceHash: `#/luyen-tap/${chapterId}/easy`,
+  });
+  currentPlayer.render();
+}
+
 // ----------------------------------------------------------------- QUIZ ENGINE
 let currentQuiz = null;
+let currentPlayer = null;
 
 function startQuiz({ mode, title, accent, questions, timerSeconds, backHash, examId }) {
   const qs = mode === 'practice' ? questions.map(presentable) : questions;
@@ -588,6 +609,7 @@ function renderSummary() {
 // ----------------------------------------------------------------- ROUTER
 function render() {
   stopTimer();
+  if (currentPlayer) { currentPlayer.destroy(); currentPlayer = null; }
   const hash = location.hash || '#/';
   const parts = hash.replace(/^#\//, '').split('/').filter(Boolean);
 
@@ -596,6 +618,8 @@ function render() {
   if (parts.length === 0) { setActiveNav('home'); viewHome(); return; }
 
   if (parts[0] === 'chuong' && parts[1]) { setActiveNav('chuong'); viewChapter(parts[1]); return; }
+
+  if (parts[0] === 'bai-giang' && parts[1]) { setActiveNav('bai-giang'); viewLesson(parts[1]); return; }
 
   if (parts[0] === 'luyen-tap' && parts[1] && parts[2]) {
     setActiveNav('luyen-tap');
