@@ -11,6 +11,21 @@ Trang web học Toán 6 trực quan, sinh động, bám sát chương trình b�
 - **Theo dõi tiến độ**: chuỗi ngày học liên tiếp, biểu đồ hoạt động 7 ngày, tiến độ theo từng chương, huy hiệu thành tích, lịch sử làm đề thi — lưu trên thiết bị (localStorage), không cần đăng nhập.
 - **Giao diện tối ưu iPad**: cỡ chạm ≥44px, bố cục responsive cho cả chế độ dọc/ngang, không phụ thuộc hover, chạy hoàn toàn offline sau khi tải trang đầu tiên (không gọi API hay font ngoài).
 
+## Trang web đang chạy
+
+🌐 **https://huyinvestor87.github.io/education/**
+
+Mỗi lần push lên nhánh chính, GitHub Actions (`.github/workflows/deploy.yml`) sẽ:
+
+1. Sinh `BUILD_ID` = SHA commit + thời điểm build, thay vào placeholder `__BUILD_ID__`
+   trong `index.html` và các câu lệnh `import` của JS → mọi tệp `.css`/`.js` đều có
+   query string phiên bản mới, trình duyệt (kể cả iPad) không dùng lại bản cache cũ.
+2. Đóng gói toàn bộ site và deploy lên GitHub Pages.
+
+> Lưu ý cấu hình: Pages của repo đang dùng nguồn **GitHub Actions**. Job deploy cố ý
+> không khai báo `environment: github-pages` vì environment này có quy tắc chỉ cho
+> phép nhánh tên `main`, sẽ chặn deploy từ các nhánh khác ngay khi khởi động job.
+
 ## Cấu trúc dự án
 
 ```
