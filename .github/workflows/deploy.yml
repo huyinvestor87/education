@@ -8,20 +8,15 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout mã nguồn
         uses: actions/checkout@v4
@@ -33,15 +28,24 @@ jobs:
           grep -rl "__BUILD_ID__" --include="*.html" --include="*.js" . | while read -r f; do
             sed -i "s/__BUILD_ID__/${BUILD_ID}/g" "$f"
           done
+          grep -rn "?v=" index.html
 
-      - name: Cấu hình GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Chuẩn bị thư mục xuất bản
+        run: |
+          rm -rf _site
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' ./ _site/
+          touch _site/.nojekyll
 
-      - name: Đóng gói toàn bộ site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy lên GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Xuất bản lên nhánh gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd _site
+          git init -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy site từ ${GITHUB_SHA::8}"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          echo "Đã xuất bản. URL: https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
