@@ -23,7 +23,11 @@ function presentable(q) {
   const order = shuffle(q.options.map((_, i) => i));
   const options = order.map(i => q.options[i]);
   const answer = order.indexOf(q.answer);
-  return { ...q, options, answer };
+  const out = { ...q, options, answer };
+  // Bản dịch phải xáo theo đúng thứ tự mới, nếu không chỉ số đáp án đúng sẽ
+  // trỏ sai phương án khi đang xem bằng tiếng Anh.
+  if (Array.isArray(q.options_en)) out.options_en = order.map(i => q.options_en[i]);
+  return out;
 }
 
 function fmtTime(sec) {
