@@ -25,17 +25,27 @@ export const CHAPTER_EN = {
     title: 'Divisibility of natural numbers',
     hook: 'Why can sweets, teams and bus timetables always be split evenly? The secret is divisibility!',
     theory: [
-      { heading: '1. Divisibility tests',
+      { heading: '1. Factors and multiples',
+        html: `<p>If a natural number a is divisible by b (b ≠ 0), then <b>a is a multiple of b</b>, and <b>b is a factor of a</b>. These are two ways of describing the same divisibility relationship. For example, 12 is divisible by 3, so 12 is a multiple of 3 and 3 is a factor of 12.</p>
+        <p><b>To find the factors of a number:</b> divide it in turn by 1, 2, 3, …; the numbers that divide it exactly are its factors. For example: F(12) = {1; 2; 3; 4; 6; 12}.</p>
+        <p><b>To find the multiples of a number:</b> multiply it in turn by 0, 1, 2, 3, … For example: M(4) = {0; 4; 8; 12; 16; 20; …}. A number has finitely many factors but infinitely many multiples.</p>
+        <ul>
+          <li>A <b>common factor</b> of two numbers is a factor of both numbers. For example: CF(12, 18) = {1; 2; 3; 6}.</li>
+          <li>A <b>common multiple</b> of two numbers is a multiple of both numbers. For example: CM(4, 6) = {0; 12; 24; 36; …}.</li>
+        </ul>
+        <p>Common factors and common multiples lead us to <b>HCF</b> and <b>LCM</b> in the next section.</p>
+        <p class="reallife">🍬 In real life: suppose you have 12 sweets to share equally among some friends, with none left over. The possible numbers of friends are factors of 12, such as 1, 2, 3, 4, 6 or 12.</p>` },
+      { heading: '2. Divisibility tests',
         html: `<ul>
           <li>Divisible by <b>2</b>: the last digit is 0, 2, 4, 6 or 8.</li>
           <li>Divisible by <b>5</b>: the last digit is 0 or 5.</li>
           <li>Divisible by <b>3</b>: the digit sum is divisible by 3.</li>
           <li>Divisible by <b>9</b>: the digit sum is divisible by 9.</li>
         </ul>` },
-      { heading: '2. Primes, composites and prime factorisation',
+      { heading: '3. Primes, composites and prime factorisation',
         html: `<p>A prime is a natural number greater than 1 with exactly two divisors: 1 and itself (2, 3, 5, 7, 11, 13…). A composite number has more than two divisors.</p>
         <p>Every composite number can be written as a product of primes — its <b>prime factorisation</b> — usually shown with a factor tree.</p>` },
-      { heading: '3. HCF and LCM',
+      { heading: '4. HCF and LCM',
         html: `<p>The <b>highest common factor HCF(a, b)</b> is the largest common divisor of a and b. The <b>lowest common multiple LCM(a, b)</b> is the smallest non-zero common multiple. Both are found from the prime factorisations.</p>
         <p class="reallife">🎒 In real life: a teacher has 24 pens and 36 notebooks and wants to make as many identical gift bags as possible. The greatest number of bags is <b>HCF(24, 36) = 12</b>.</p>
         <p class="reallife">🚌 Bus A leaves every 15 minutes and bus B every 20 minutes; both leave at 6 o'clock. They next leave together after <b>LCM(15, 20) = 60 minutes</b>, that is at 7 o'clock.</p>` },
@@ -175,15 +185,15 @@ export const QUESTION_EN = {
   'c2-e1': ['Which number is divisible by both 2 and 5?', ['120', '123', '125', '122'], 'A number divisible by both 2 and 5 must end in 0. Only 120 does.'],
   'c2-e2': ['471 is divisible by which of these numbers?', ['2', '3', '5', '9'], 'Digit sum: 4+7+1 = 12, which is divisible by 3 (but not by 9), so 471 is divisible by 3.'],
   'c2-e3': ['Which of these is a prime number?', ['21', '29', '33', '51'], '29 has only the divisors 1 and 29, so it is prime. The others are composite (21=3×7, 33=3×11, 51=3×17).'],
-  'c2-e4': ['HCF(12, 18) equals:', ['2', '4', '6', '36'], '12 = 2²×3 and 18 = 2×3², so the highest common factor is 2×3 = 6.'],
+  'c2-e4': ['HCF(12, 18) equals:', ['2', '4', '6', '36'], 'CF(12, 18) = {1; 2; 3; 6}, so HCF(12, 18) = 6 — the largest of the common factors.'],
   'c2-m1': ['Write 60 as a product of prime factors:', ['2² × 3 × 5', '2 × 3 × 10', '2² × 15', '4 × 3 × 5'], '60 = 2×30 = 2×2×15 = 2²×3×5.'],
-  'c2-m2': ['LCM(4, 6) equals:', ['24', '12', '2', '18'], '4 = 2² and 6 = 2×3, so the lowest common multiple is 2²×3 = 12.'],
+  'c2-m2': ['LCM(4, 6) equals:', ['24', '12', '2', '18'], 'CM(4, 6) = {0; 12; 24; …}, so LCM(4, 6) = 12 — the smallest non-zero common multiple.'],
   'c2-m3': ['A class has 32 boys and 24 girls to be split into groups with equal numbers of boys and of girls. The greatest possible number of groups is:',
-    ['4 groups', '6 groups', '8 groups', '12 groups'], 'The greatest number of groups is HCF(32, 24) = 8.'],
+    ['4 groups', '6 groups', '8 groups', '12 groups'], 'The number of groups must be a common factor of 32 and 24 so that both the boys and the girls can be divided equally. Since we need the greatest possible number of groups, we use HCF(32, 24) = 8.'],
   'c2-m4': ['How many non-zero natural numbers below 50 are divisible by both 3 and 5?', ['1 number', '2 numbers', '3 numbers', '4 numbers'],
     'Divisible by both 3 and 5 means divisible by 15: the numbers are 15, 30 and 45 — three of them.'],
   'c2-h1': ['An is on duty every 4 days and Binh every 6 days. Today they are on duty together. After how many days will they next be on duty together?',
-    ['10 days', '12 days', '24 days', '8 days'], 'The answer is LCM(4, 6) = 12 days.'],
+    ['10 days', '12 days', '24 days', '8 days'], 'The number of days until they are next on duty together must be a common multiple of 4 and 6. Since we need the least number of days, we use LCM(4, 6) = 12 days.'],
   'c2-h2': ['The HCF and the LCM of 36 and 60 are:', ['12 and 180', '6 and 360', '12 and 360', '18 and 180'],
     '36 = 2²×3² and 60 = 2²×3×5. HCF = 2²×3 = 12. LCM = 2²×3²×5 = 180.'],
   'c2-h3': ['A natural number is divisible by 9 when:', ['Its last digit is divisible by 9', 'The sum of its digits is divisible by 9', 'The number is odd', 'The sum of its digits is divisible by 3'],

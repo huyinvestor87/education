@@ -45,7 +45,20 @@ export const CHAPTERS = [
     hook: 'Vì sao chia kẹo, chia đội chơi hay xếp lịch xe buýt luôn "chia đều" được? Bí quyết nằm ở tính chia hết!',
     theory: [
       {
-        heading: '1. Dấu hiệu chia hết',
+        heading: '1. Ước và bội',
+        html: `<p>Nếu số tự nhiên a chia hết cho b (b ≠ 0) thì <b>a là bội của b</b>, còn <b>b là ước của a</b>. Đây là hai cách nói về cùng một quan hệ chia hết. Ví dụ, 12 chia hết cho 3 nên 12 là bội của 3 và 3 là ước của 12.</p>
+        <p><b>Cách tìm ước của một số:</b> lần lượt chia số đó cho 1, 2, 3, …; những số chia hết là các ước. Ví dụ: Ư(12) = {1; 2; 3; 4; 6; 12}.</p>
+        <p><b>Cách tìm bội của một số:</b> lần lượt nhân số đó với 0, 1, 2, 3, … Ví dụ: B(4) = {0; 4; 8; 12; 16; 20; …}. Một số có hữu hạn ước nhưng có vô số bội.</p>
+        <ul>
+          <li><b>Ước chung</b> của hai số là số vừa là ước của số này, vừa là ước của số kia. Ví dụ: ƯC(12, 18) = {1; 2; 3; 6}.</li>
+          <li><b>Bội chung</b> của hai số là số vừa là bội của số này, vừa là bội của số kia. Ví dụ: BC(4, 6) = {0; 12; 24; 36; …}.</li>
+        </ul>
+        <p>Từ các ước chung và bội chung, ta sẽ tìm được <b>ƯCLN</b> và <b>BCNN</b> ở mục sau.</p>
+        <p class="reallife">🍬 Ví dụ thực tế: Có 12 viên kẹo và muốn chia đều cho các bạn, không để thừa. Số bạn có thể chia đều chính là một ước của 12, chẳng hạn 1, 2, 3, 4, 6 hoặc 12 bạn.</p>`,
+        illusFn: () => I.numberLine({ min: 0, max: 24, points: [{ value: 0, color: '#22B27C' }, { value: 4, color: '#22B27C' }, { value: 8, color: '#22B27C' }, { value: 12, color: '#22B27C' }, { value: 16, color: '#22B27C' }, { value: 20, color: '#22B27C' }, { value: 24, color: '#22B27C' }] }),
+      },
+      {
+        heading: '2. Dấu hiệu chia hết',
         html: `<ul>
           <li>Chia hết cho <b>2</b>: chữ số tận cùng là 0, 2, 4, 6, 8.</li>
           <li>Chia hết cho <b>5</b>: chữ số tận cùng là 0 hoặc 5.</li>
@@ -54,13 +67,13 @@ export const CHAPTERS = [
         </ul>`,
       },
       {
-        heading: '2. Số nguyên tố, hợp số và phân tích ra thừa số nguyên tố',
+        heading: '3. Số nguyên tố, hợp số và phân tích ra thừa số nguyên tố',
         html: `<p>Số nguyên tố là số tự nhiên lớn hơn 1, chỉ có đúng 2 ước là 1 và chính nó (2, 3, 5, 7, 11, 13…). Hợp số là số tự nhiên lớn hơn 1 có nhiều hơn 2 ước.</p>
         <p>Mọi hợp số đều viết được thành tích các thừa số nguyên tố, gọi là <b>phân tích ra thừa số nguyên tố</b>, thường trình bày bằng sơ đồ cây.</p>`,
         illusFn: () => I.factorTree(),
       },
       {
-        heading: '3. Ước chung, ƯCLN – Bội chung, BCNN',
+        heading: '4. Ước chung, ƯCLN – Bội chung, BCNN',
         html: `<p><b>ƯCLN(a, b)</b> là số lớn nhất trong tập hợp các ước chung của a và b. <b>BCNN(a, b)</b> là số nhỏ nhất khác 0 trong tập hợp các bội chung của a và b. Ta tìm chúng bằng cách phân tích a, b ra thừa số nguyên tố.</p>
         <p class="reallife">🎒 Ví dụ thực tế: Cô giáo có 24 cây bút và 36 quyển vở, muốn chia đều thành nhiều phần thưởng nhất có thể sao cho phần bút và vở ở mỗi phần bằng nhau. Số phần thưởng nhiều nhất chính là <b>ƯCLN(24, 36) = 12</b> phần.</p>
         <p class="reallife">🚌 Xe buýt A cứ 15 phút xuất phát một chuyến, xe buýt B cứ 20 phút xuất phát một chuyến, cả hai cùng xuất phát lúc 6 giờ. Lần tiếp theo hai xe cùng xuất phát là sau <b>BCNN(15, 20) = 60 phút</b>, tức là lúc 7 giờ.</p>`,
@@ -262,12 +275,12 @@ export const QUESTIONS = [
   mcq('c2-e1', 'c2', 'easy', 'Số nào sau đây chia hết cho cả 2 và 5?', ['120', '123', '125', '122'], 0, 'Số chia hết cho cả 2 và 5 phải có chữ số tận cùng là 0. Chỉ có 120 thỏa mãn.'),
   mcq('c2-e2', 'c2', 'easy', 'Số 471 chia hết cho số nào trong các số sau?', ['2', '3', '5', '9'], 1, 'Tổng các chữ số: 4+7+1 = 12, chia hết cho 3 (nhưng không chia hết cho 9) nên 471 chia hết cho 3.'),
   mcq('c2-e3', 'c2', 'easy', 'Số nào sau đây là số nguyên tố?', ['21', '29', '33', '51'], 1, '29 chỉ có hai ước là 1 và 29 nên là số nguyên tố. Các số còn lại đều là hợp số (21=3×7, 33=3×11, 51=3×17).'),
-  mcq('c2-e4', 'c2', 'easy', 'ƯCLN(12, 18) bằng:', ['2', '4', '6', '36'], 2, '12 = 2²×3; 18 = 2×3². ƯCLN = 2×3 = 6.'),
+  mcq('c2-e4', 'c2', 'easy', 'ƯCLN(12, 18) bằng:', ['2', '4', '6', '36'], 2, 'ƯC(12, 18) = {1; 2; 3; 6}, nên ƯCLN(12, 18) = 6 — số lớn nhất trong các ước chung.'),
   mcq('c2-m1', 'c2', 'medium', 'Phân tích số 60 ra thừa số nguyên tố:', ['2² × 3 × 5', '2 × 3 × 10', '2² × 15', '4 × 3 × 5'], 0, '60 = 2×30 = 2×2×15 = 2²×3×5.'),
-  mcq('c2-m2', 'c2', 'medium', 'BCNN(4, 6) bằng:', ['24', '12', '2', '18'], 1, '4 = 2²; 6 = 2×3. BCNN = 2²×3 = 12.'),
-  mcq('c2-m3', 'c2', 'medium', 'Một lớp có 32 học sinh nam và 24 học sinh nữ, muốn chia thành các tổ có số nam, số nữ đều nhau. Số tổ nhiều nhất có thể chia là:', ['4 tổ', '6 tổ', '8 tổ', '12 tổ'], 2, 'Số tổ nhiều nhất chính là ƯCLN(32, 24) = 8 tổ.'),
+  mcq('c2-m2', 'c2', 'medium', 'BCNN(4, 6) bằng:', ['24', '12', '2', '18'], 1, 'BC(4, 6) = {0; 12; 24; …}, nên BCNN(4, 6) = 12 — số nhỏ nhất khác 0 trong các bội chung.'),
+  mcq('c2-m3', 'c2', 'medium', 'Một lớp có 32 học sinh nam và 24 học sinh nữ, muốn chia thành các tổ có số nam, số nữ đều nhau. Số tổ nhiều nhất có thể chia là:', ['4 tổ', '6 tổ', '8 tổ', '12 tổ'], 2, 'Số tổ phải là ước chung của 32 và 24 để cả số nam và số nữ đều được chia đều. Vì cần số tổ nhiều nhất nên lấy ƯCLN(32, 24) = 8 tổ.'),
   mcq('c2-m4', 'c2', 'medium', 'Có bao nhiêu số tự nhiên khác 0, nhỏ hơn 50 vừa chia hết cho 3 vừa chia hết cho 5?', ['1 số', '2 số', '3 số', '4 số'], 2, 'Chia hết cho cả 3 và 5 nghĩa là chia hết cho 15. Các số đó là 15, 30, 45 → có 3 số.'),
-  mcq('c2-h1', 'c2', 'hard', 'An cứ 4 ngày trực nhật một lần, Bình cứ 6 ngày trực nhật một lần. Hôm nay cả hai cùng trực. Hỏi ít nhất sau bao nhiêu ngày hai bạn lại cùng trực?', ['10 ngày', '12 ngày', '24 ngày', '8 ngày'], 1, 'Số ngày cần tìm là BCNN(4, 6) = 12 ngày.'),
+  mcq('c2-h1', 'c2', 'hard', 'An cứ 4 ngày trực nhật một lần, Bình cứ 6 ngày trực nhật một lần. Hôm nay cả hai cùng trực. Hỏi ít nhất sau bao nhiêu ngày hai bạn lại cùng trực?', ['10 ngày', '12 ngày', '24 ngày', '8 ngày'], 1, 'Số ngày để hai bạn lại cùng trực phải là bội chung của 4 và 6. Vì cần số ngày ít nhất nên lấy BCNN(4, 6) = 12 ngày.'),
   mcq('c2-h2', 'c2', 'hard', 'ƯCLN và BCNN của 36 và 60 lần lượt là:', ['12 và 180', '6 và 360', '12 và 360', '18 và 180'], 0, '36 = 2²×3²; 60 = 2²×3×5. ƯCLN = 2²×3 = 12. BCNN = 2²×3²×5 = 180.'),
   mcq('c2-h3', 'c2', 'hard', 'Một số tự nhiên chia hết cho 9 khi:', ['Chữ số tận cùng chia hết cho 9', 'Tổng các chữ số chia hết cho 9', 'Số đó là số lẻ', 'Tổng các chữ số chia hết cho 3'], 1, 'Dấu hiệu chia hết cho 9: tổng các chữ số của số đó chia hết cho 9.'),
   mcq('c2-g1', 'c2', 'hsg', 'Số tự nhiên nhỏ nhất có 3 chữ số vừa chia hết cho 4, vừa chia hết cho 5 nhưng không chia hết cho 3 là:', ['100', '120', '110', '105'], 0, 'Chia hết cho cả 4 và 5 nghĩa là chia hết cho 20. Số có 3 chữ số nhỏ nhất chia hết cho 20 là 100; tổng chữ số 1+0+0=1 không chia hết cho 3 → thỏa mãn.'),
