@@ -78,6 +78,60 @@ const c1 = [
 
 // ============================================================ CHƯƠNG 2
 const c2 = [
+  scene('Ước và bội là gì?', 'Mười hai chiếc bánh xếp vừa đúng ba hàng, mỗi hàng bốn chiếc, không thừa chiếc nào. Vì mười hai chia hết cho ba nên ba là ước của mười hai, còn mười hai là bội của ba. Hai cách nói này luôn đi cùng nhau.', 10, (t) => {
+    const grid = phase(t, 0.05, 0.4), p2 = phase(t, 0.42, 0.6), p3 = phase(t, 0.6, 0.78), p4 = phase(t, 0.8, 1);
+    let g = '';
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+      const i = r * 4 + c;
+      g += cell(216 + c * 52, 78 + r * 52, 52, '#22B27C', stagger(grid, i, 12));
+    }
+    return svg(`${BG('#22B27C')}
+      ${label(320, 46, L('12 chiếc bánh xếp thành 3 hàng', '12 cakes arranged in 3 rows'), { size: 23, color: '#22B27C' })}
+      ${g}
+      ${label(170, 160, L('3 hàng', '3 rows'), { size: 18, color: '#475569', opacity: grid })}
+      ${label(320, 262, L('12 : 3 = 4 — không dư', '12 : 3 = 4 — nothing left over'), { size: 22, color: '#F79A3E', opacity: p2 })}
+      ${resultBox(166, 314, L('3 là ước của 12', '3 is a factor of 12'), p3, '#4F8EF7', 296, 50)}
+      ${resultBox(474, 314, L('12 là bội của 3', '12 is a multiple of 3'), p4, '#F79A3E', 296, 50)}
+      ${label(320, 368, L('a chia hết cho b → b là ước của a, a là bội của b', 'a divisible by b → b is a factor of a, a is a multiple of b'), { size: 17, weight: 700, color: '#475569', opacity: p4 })}`);
+  }),
+
+  scene('Tìm tất cả ước của 12', 'Muốn tìm ước của mười hai, ta lần lượt chia mười hai cho một, cho hai, cho ba, cho tới mười hai. Phép chia nào không dư thì số chia đó là một ước. Ta được sáu số: một, hai, ba, bốn, sáu và mười hai. Mỗi số chỉ có hữu hạn ước thôi.', 10, (t) => {
+    const scan = phase(t, 0.08, 0.68), fin = phase(t, 0.72, 0.9), box = phase(t, 0.88, 1);
+    const found = [];
+    let chips = '';
+    for (let n = 1; n <= 12; n++) {
+      const i = n - 1, p = stagger(scan, i, 12, 0.2), on = p > 0.6, isD = 12 % n === 0;
+      if (on && isD) found.push(n);
+      const x = 96 + (i % 6) * 90, y = 126 + Math.floor(i / 6) * 78;
+      const col = !on ? '#94a3b8' : isD ? '#22B27C' : '#cbd5e1';
+      chips += `<circle cx="${x}" cy="${y}" r="30" fill="${col}" fill-opacity="${on ? 0.22 : 0.08}" stroke="${col}" stroke-width="3" opacity="${clamp(p * 2)}"/>`
+        + label(x, y + 9, String(n), { size: 24, color: on && !isD ? '#94a3b8' : '#1b2436', opacity: clamp(p * 2) })
+        + (on && isD ? label(x + 30, y - 26, '✓', { size: 20, color: '#22B27C' }) : '');
+    }
+    return svg(`${BG('#22B27C')}
+      ${label(320, 48, L('Chia 12 cho 1, 2, 3, … đến 12', 'Divide 12 by 1, 2, 3, … up to 12'), { size: 23, color: '#22B27C' })}
+      ${chips}
+      ${label(320, 292, `Ư(12) = {${found.join('; ')}}`, { size: 26, color: '#22B27C', opacity: fin })}
+      ${resultBox(320, 348, L('Chỉ có 6 ước — hữu hạn', 'Only 6 factors — a finite list'), box, '#4F8EF7', 340, 46)}`);
+  }),
+
+  scene('Bội của 3 nhiều vô kể', 'Bội của ba là kết quả của ba nhân với không, với một, với hai, với ba và cứ thế mãi. Trên trục số, chú ếch nhảy từng bước ba đơn vị và không bao giờ phải dừng lại. Vì vậy một số có vô số bội.', 9, (t) => {
+    const X = axisX(70, 530, 0, 21), y = 226;
+    const p = phase(t, 0.12, 0.8), fin = phase(t, 0.82, 1);
+    const cur = lerp(0, 21, p);
+    let dots = '', hops = '';
+    [0, 3, 6, 9, 12, 15, 18, 21].forEach(v => { if (v <= cur + 0.01) dots += `<circle cx="${X(v)}" cy="${y}" r="9" fill="#22B27C"/>`; });
+    for (let k = 0; k < Math.min(7, Math.floor(cur / 3)); k++) hops += hopArc(X(k * 3), X(k * 3 + 3), y, 50, '#F79A3E', 1);
+    return svg(`${BG('#22B27C')}
+      ${label(320, 52, L('Chú ếch nhảy từng bước 3 đơn vị', 'The frog hops three units at a time'), { size: 23, color: '#22B27C' })}
+      ${axis(70, 530, y, 0, 21, { step: 3 })}
+      ${hops}${dots}
+      ${emoji(X(cur), y - 44, '🐸', 34, clamp(p * 4))}
+      ${label(586, y + 9, '…', { size: 38, color: '#22B27C', opacity: fin })}
+      ${label(320, 308, 'B(3) = {0; 3; 6; 9; 12; 15; 18; 21; …}', { size: 23, color: '#22B27C', opacity: fin })}
+      ${resultBox(320, 354, L('Bội thì vô số!', 'Infinitely many multiples!'), fin, '#F79A3E', 300, 44)}`);
+  }),
+
   scene('Chia kẹo có dư không?', 'Mười hai chiếc kẹo chia đều cho ba bạn, mỗi bạn được bốn chiếc, không thừa chiếc nào. Ta nói mười hai chia hết cho ba.', 9, (t) => {
     const split = phase(t, 0.35, 0.85);
     let items = '';
@@ -588,6 +642,10 @@ const SCENE_EN = {
   'Cộng trên tia số': ['Adding on the number line', 'Three plus four is shown as four hops along the number line, from the point three to the point seven.'],
   'Lũy thừa là gì?': ['What is a power?', 'A square tile with a side of three decimetres has three rows of three cells. That makes nine cells altogether, written in short as three squared.'],
   'Đi mua đồ dùng học tập': ['Shopping for school supplies', 'Mai buys three notebooks at eight thousand dong and two pens at five thousand dong. Multiply first, then add: the total is thirty four thousand. From fifty thousand, her change is sixteen thousand dong.'],
+
+  'Ước và bội là gì?': ['What are factors and multiples?', 'Twelve cakes fit into exactly three rows of four, with none left over. Because twelve is divisible by three, three is a factor of twelve and twelve is a multiple of three. Those two statements always come together.'],
+  'Tìm tất cả ước của 12': ['Finding every factor of 12', 'To find the factors of twelve, divide twelve by one, by two, by three, and so on up to twelve. Whenever the division leaves no remainder, that divisor is a factor. We get six of them: one, two, three, four, six and twelve. Every number has only finitely many factors.'],
+  'Bội của 3 nhiều vô kể': ['Multiples of 3 never run out', 'The multiples of three are three times zero, three times one, three times two, three times three, and so on for ever. On the number line the frog hops three units at a time and never has to stop. So a number has infinitely many multiples.'],
 
   'Chia kẹo có dư không?': ['Sharing sweets — any left over?', 'Twelve sweets shared equally between three friends give four sweets each, with none left over. We say that twelve is divisible by three.'],
   'Dấu hiệu chia hết cho 3': ['The divisibility test for 3', 'For the number four hundred and seventy one, add the digits: four plus seven plus one makes twelve. Since twelve is divisible by three, the number is divisible by three too.'],
