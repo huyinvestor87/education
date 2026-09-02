@@ -278,7 +278,8 @@ main#app { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
 .review-explain { font-size: .92rem; background: #f7f9fd; padding: 10px 12px; border-radius: var(--radius-sm); }
 
 /* ---------------------------------------------------------- Progress dashboard */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+/* auto-fit để 5 ô thống kê không bị lẻ hàng như khi cố định 4 cột */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
 .stat-box { background: var(--card); border-radius: var(--radius-lg); padding: 20px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
 .stat-num { display: block; font-size: 2rem; font-weight: 900; color: var(--brand); }
 .stat-box span:last-child { font-size: .85rem; color: var(--ink-soft); font-weight: 700; }
@@ -294,6 +295,21 @@ main#app { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
 .cpr-info { flex: 1; }
 .cpr-info b { font-size: .95rem; }
 .cpr-percent { font-weight: 800; color: var(--accent); min-width: 42px; text-align: right; }
+
+/* ---- Xếp hạng sao theo số lần làm sai ---- */
+.star-row { display: inline-flex; gap: 2px; line-height: 1; white-space: nowrap; }
+.star-row .star.off { opacity: .3; }
+.star-row.big { gap: 6px; font-size: 2rem; }
+.cpr-stars { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.cpr-stars small { color: var(--muted); font-size: .75rem; }
+.star-hero { text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 18px; }
+.star-hero b { display: block; margin-top: 10px; font-size: 1.05rem; }
+.star-hero p { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+.star-rule { margin-top: 14px; text-align: left; }
+.star-rule summary { cursor: pointer; font-weight: 700; font-size: .9rem; color: var(--accent); min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.star-rule p { margin-top: 6px; line-height: 1.6; }
+.summary-stars { margin-top: 14px; }
+.summary-stars p { color: var(--muted); font-size: .9rem; margin-top: 6px; }
 
 .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .badge-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; opacity: .4; filter: grayscale(1); }

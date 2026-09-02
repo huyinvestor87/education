@@ -44,6 +44,16 @@ function diffClass(d) {
   return { easy: 'tag-easy', medium: 'tag-medium', hard: 'tag-hard', hsg: 'tag-hsg' }[d] || '';
 }
 
+/** Dải sao ⭐ thể hiện mức hoàn thành (0–5). */
+function starRow(n, size = '') {
+  const stars = [...Array(P.STAR_MAX)].map((_, i) =>
+    `<span class="star ${i < n ? 'on' : 'off'}">${i < n ? '⭐' : '☆'}</span>`).join('');
+  return `<span class="star-row ${size}" role="img" aria-label="${n}/${P.STAR_MAX}">${stars}</span>`;
+}
+function starMessage(n) {
+  return n === 0 ? t('starNone') : t(`star${n}`);
+}
+
 function go(hash) {
   if (currentQuiz && currentQuiz.mode === 'exam' && !currentQuiz.submitted) {
     if (!confirm(t('examExitConfirm'))) return;
@@ -359,8 +369,19 @@ function viewProgress() {
       <div class="stat-grid">
         <div class="stat-box"><span class="stat-num">${stats.done}</span><span>${t('statDone')}</span></div>
         <div class="stat-box"><span class="stat-num">${stats.accuracy}%</span><span>${t('statAccuracy')}</span></div>
+        <div class="stat-box"><span class="stat-num">${stats.wrong}</span><span>${t('statWrong')}</span></div>
         <div class="stat-box"><span class="stat-num">${stats.streak}</span><span>${t('statStreakDays')}</span></div>
         <div class="stat-box"><span class="stat-num">${stats.examCount}</span><span>${t('statExams')}</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>${t('starHead')}</h2></div>
+      <div class="star-hero">
+        ${starRow(stats.stars, 'big')}
+        <b>${starMessage(stats.stars)}</b>
+        <p>${stats.done} ${t('statDone')} · ${stats.wrong} ${t('starWrongTimes')}</p>
+        <details class="star-rule"><summary>${t('starRuleHead')}</summary><p>${t('starRule')}</p></details>
       </div>
     </section>
 
@@ -378,7 +399,11 @@ function viewProgress() {
           const st = P.chapterStats(ch.id, QUESTIONS);
           return `<a class="chapter-progress-row" href="#/chuong/${ch.id}" style="--accent:${ch.color}">
             <span class="chapter-emoji">${ch.emoji}</span>
-            <div class="cpr-info"><b>${tf(ch, 'title')}</b><div class="mini-bar"><span style="width:${st.percent}%"></span></div></div>
+            <div class="cpr-info">
+              <b>${tf(ch, 'title')}</b>
+              <div class="mini-bar"><span style="width:${st.percent}%"></span></div>
+              <span class="cpr-stars">${starRow(st.stars)} <small>${st.wrong} ${t('starWrongTimes')}</small></span>
+            </div>
             <span class="cpr-percent">${st.percent}%</span>
           </a>`;
         }).join('')}
@@ -566,6 +591,11 @@ function submitExam(auto) {
   currentQuiz.questions.forEach(q => { if (currentQuiz.answers[q.id] === q.answer) score++; });
   currentQuiz.submitted = true;
   currentQuiz.autoSubmitted = auto;
+  // Câu sai trong đề thi cũng là làm sai — ghi nhận để đếm vào xếp hạng sao.
+  // Chỉ tính những câu học sinh thực sự có chọn đáp án.
+  currentQuiz.questions.forEach(q => {
+    if (currentQuiz.answers[q.id] !== undefined) P.recordAnswer(q, currentQuiz.answers[q.id] === q.answer, false);
+  });
   const elapsed = Math.round((Date.now() - currentQuiz.startedAt) / 1000);
   P.recordExam({ examId: currentQuiz.examId, title: currentQuiz.title, score, total, minutes: Math.ceil(elapsed / 60) });
   renderSummary();
@@ -578,6 +608,8 @@ function renderSummary() {
   currentQuiz.questions.forEach(q => { if (currentQuiz.answers[q.id] === q.answer) score++; });
   const percent = Math.round((score / total) * 100);
   const scoreMsg = percent >= 90 ? t('msgExcellent') : percent >= 70 ? t('msgGreat') : percent >= 50 ? t('msgOk') : t('msgWork');
+  const wrongThisRound = total - score;
+  const stars = P.starsFor(total, total, wrongThisRound);
 
   app.innerHTML = `
     <section class="summary-wrap" style="--accent:${currentQuiz.accent}">
@@ -585,6 +617,10 @@ function renderSummary() {
         ${progressRing(percent, currentQuiz.accent, 120)}
         <h1>${scoreMsg}</h1>
         <p>${t('youGotA')} <b>${score}/${total}</b> ${t('youGotB')}${currentQuiz.autoSubmitted ? t('autoSubmitted') : '.'}</p>
+        <div class="summary-stars">
+          ${starRow(stars, 'big')}
+          <p>${t('sessionWrong')} <b>${wrongThisRound}</b></p>
+        </div>
         <div class="summary-actions">
           <button class="btn btn-primary" id="retryBtn">${t('retry')}</button>
           <a class="btn btn-outline" href="${currentQuiz.backHash}">${t('backToList')}</a>
